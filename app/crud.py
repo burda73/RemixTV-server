@@ -120,11 +120,8 @@ def append_video_to_playlist(
     start_date: datetime | None = None,
     end_date: datetime | None = None,
     is_active: bool = True,
-) -> PlaylistItem | None:
-    """Добавляет видео в конец, если ещё нет в плейлисте."""
-    existing = db.scalar(select(PlaylistItem).where(PlaylistItem.video_id == video_id))
-    if existing:
-        return None
+) -> PlaylistItem:
+    """Добавляет видео в конец плейлиста (допускаются повторные вхождения)."""
     item = PlaylistItem(
         video_id=video_id,
         sort_order=_next_playlist_order(db),

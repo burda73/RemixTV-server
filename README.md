@@ -48,6 +48,11 @@ curl -s -X POST http://127.0.0.1:8000/api/playlist \
   -d '{"video_id":1}'
 ```
 
+Одно и то же видео можно добавлять в плейлист **несколько раз** (у каждого вхождения свой `playlist_item_id`, свои даты показа и флаг активности).
+
+> Если вы обновляете версию с запретом дублей — снимите уникальное ограничение с таблицы `playlist_items`:
+> SQLite: `python3 migrate_playlist_duplicates.py`; PostgreSQL: `ALTER TABLE playlist_items DROP CONSTRAINT uq_playlist_video;`
+
 Изменить порядок:
 
 ```bash

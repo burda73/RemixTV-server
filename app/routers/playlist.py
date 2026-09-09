@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -13,8 +12,6 @@ from app.schemas import (
     PlaylistItemUpdate,
     PlaylistReorderBody,
 )
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["playlist"])
 
@@ -43,20 +40,13 @@ def add_to_playlist(
     if not video:
         raise HTTPException(status_code=404, detail="Видео не найдено")
     _validate_period(body.start_date, body.end_date)
-    try:
-        item = crud.create_playlist_item(
-            db,
-            video_id=body.video_id,
-            start_date=body.start_date,
-            end_date=body.end_date,
-            is_active=body.is_active,
-        )
-    except IntegrityError as e:
-        logger.warning("Дубликат видео в плейлисте: %s", e)
-        raise HTTPException(
-            status_code=409,
-            detail="Это видео уже добавлено в плейлист",
-        ) from e
+    item = crud.create_playlist_item(
+        db,
+        video_id=body.video_id,
+        start_date=body.start_date,
+        end_date=body.end_date,
+        is_active=body.is_active,
+    )
     item = crud.get_playlist_item(db, item.id)
     assert item is not None
     return PlaylistItemOut.model_validate(item)
