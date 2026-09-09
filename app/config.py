@@ -58,6 +58,9 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     s = Settings()
+    base = Path(__file__).resolve().parent.parent
+    if s.upload_dir and not Path(s.upload_dir).is_absolute():
+        s.upload_dir = str(base / s.upload_dir)
     Path(s.upload_dir).mkdir(parents=True, exist_ok=True)
     return s
 

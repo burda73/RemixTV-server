@@ -24,7 +24,16 @@ logger = logging.getLogger("playlist_manager")
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        logger.error(
+            "Не удалось открыть базу данных. Проверьте права на каталог проекта "
+            "(запустите: chown -R <service_user>:<group> <каталог_проекта>) "
+            "или укажите абсолютный путь в DATABASE_URL. Ошибка: %s",
+            e,
+        )
+        raise
     with SessionLocal() as session:
         if session.get(ServerState, 1) is None:
             session.add(ServerState(id=1, playlist_revision=1))
