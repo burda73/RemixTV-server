@@ -1,0 +1,16 @@
+[Unit]
+Description=RemixTV Video Playlist Server
+After=network.target
+
+[Service]
+Type=simple
+User=bvv
+Group=bvv
+WorkingDirectory=/home/bvv/RemixTV-server
+Environment=PYTHONPATH=/home/bvv/RemixTV-server
+ExecStart=/home/bvv/RemixTV-server/venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
